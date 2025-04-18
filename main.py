@@ -1,3 +1,23 @@
+# ---------------------------------------------------------------
+# Rogue Invaders - Jogo do tipo plataforma/arcade feito com PgZero
+# Autor: Rui Tobias Carvalho
+# Data: Abril de 2025
+#
+# Descrição:
+# Este jogo foi desenvolvido como parte de um projeto educacional.
+# Apresenta animações de sprite, inimigos com comportamento dinâmico,
+# sons, um menu funcional e sistema de pontuação/vidas.
+#
+# Requisitos:
+# - Python 3.x
+# - Biblioteca PgZero (pgzrun)
+#
+# Contato:
+# GitHub: https://github.com/seu-usuario-aqui
+# LinkedIn: https://www.linkedin.com/in/ruitobias
+# Email: ruitobiascarvalho@gmail.com
+# ---------------------------------------------------------------
+
 import random
 from pgzero.builtins import Actor, keyboard, sounds, Rect
 
