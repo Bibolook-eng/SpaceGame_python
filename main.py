@@ -80,8 +80,8 @@ class Bullet:
 
 # Classe do inimigo
 class Enemy:
-    def __init__(self):
-        self.actor = Actor('enemy1_1', (WIDTH//2, 100))
+    def __init__(self, x, y):
+        self.actor = Actor('enemy1_1', (x, y))
         self.actor.scale = 0.8
         self.speed = ENEMY_SPEED
         self.health = 100
@@ -116,7 +116,7 @@ class Game:
     def __init__(self):
         self.state = "menu"         # Estados: menu, playing, gameover
         self.player = None
-        self.enemy = None
+        self.enemies = []           # Lista de inimigos
         self.bullets = []           # Balas do jogador
         self.enemy_bullets = []     # Balas dos inimigos
         self.wave = 1
@@ -132,13 +132,19 @@ class Game:
     def start_game(self):
         self.state = "playing"
         self.player = Player()
-        self.spawn_enemy()
+        self.spawn_enemies()  # Modificado para gerar vários inimigos
         self.bullets.clear()
         self.enemy_bullets.clear()
         self.wave = 1
 
-    def spawn_enemy(self):
-        self.enemy = Enemy()
+    def spawn_enemies(self):
+        # Gerar 6 inimigos dispostos em 2 linhas com 3 inimigos em cada
+        self.enemies.clear()  # Limpa os inimigos anteriores, se houver
+        for i in range(2):  # Duas linhas
+            for j in range(2):  # Três inimigos por linha
+                x = 150 + j * 200  # Espaçamento horizontal
+                y = 100 + i * 100  # Espaçamento vertical
+                self.enemies.append(Enemy(x, y))
 
     def update(self):
         if self.state != "playing":
@@ -158,30 +164,31 @@ class Game:
             if not bullet.active:
                 self.enemy_bullets.remove(bullet)
 
-        # Atualiza o inimigo
-        if self.enemy:
-            self.enemy.update()
-            if new_bullet := self.enemy.shoot():
+        # Atualiza os inimigos
+        for enemy in self.enemies[:]:
+            enemy.update()
+            if new_bullet := enemy.shoot():
                 self.enemy_bullets.append(new_bullet)
 
         # Verifica colisões
         self.check_collisions()
 
-        # Cria novo inimigo se o anterior foi destruído
-        if not self.enemy:
+        # Cria novos inimigos se todos forem destruídos
+        if not self.enemies:
             self.wave += 1
-            self.spawn_enemy()
+            self.spawn_enemies()
 
     def check_collisions(self):
-        # Verifica se alguma bala do jogador atingiu o inimigo
+        # Verifica se alguma bala do jogador atingiu um inimigo
         for bullet in self.bullets[:]:
-            if self.enemy and abs(bullet.actor.x - self.enemy.actor.x) < 30 and abs(bullet.actor.y - self.enemy.actor.y) < 30:
-                self.enemy.health -= 50
-                if self.enemy.health <= 0:
-                    self.player.score += 30
-                    sounds.invaderkilled.play()
-                    self.enemy = None
-                bullet.active = False
+            for enemy in self.enemies[:]:
+                if abs(bullet.actor.x - enemy.actor.x) < 30 and abs(bullet.actor.y - enemy.actor.y) < 30:
+                    enemy.health -= 50
+                    if enemy.health <= 0:
+                        self.player.score += 30
+                        sounds.invaderkilled.play()
+                        self.enemies.remove(enemy)
+                    bullet.active = False
 
         # Verifica se o jogador foi atingido
         for bullet in self.enemy_bullets[:]:
@@ -213,8 +220,8 @@ class Game:
         # Tela do jogo em execução
         screen.clear()
         screen.blit('background', (0, 0))
-        if self.enemy:
-            self.enemy.draw()
+        for enemy in self.enemies:
+            enemy.draw()
         for bullet in self.bullets + self.enemy_bullets:
             bullet.draw()
         self.player.draw()
@@ -256,22 +263,8 @@ class Game:
             if self.restart_button.collidepoint(pos):
                 self.start_game()
 
-    def on_key_down(self, key):
-        # Controles do teclado
-        if key == keys.S and self.state == "gameover":
-            self.start_game()
-        elif key == keys.ESCAPE:
-            self.state = "menu"
-        elif key == keys.RETURN and self.state == "menu":
-            self.start_game()
-        elif key == keys.SPACE and self.state == "playing":
-            if new_bullet := self.player.shoot():
-                self.bullets.append(new_bullet)
-
-# Instância do jogo
 game = Game()
 
-# Funções padrão do Pygame Zero
 def update():
     game.update()
 
@@ -282,4 +275,9 @@ def on_mouse_down(pos):
     game.on_mouse_down(pos)
 
 def on_key_down(key):
-    game.on_key_down(key)
+    if key == keys.SPACE and game.state == "playing":
+        new_bullet = game.player.shoot()
+        if new_bullet:
+            game.bullets.append(new_bullet)
+    elif key == keys.S and game.state == "gameover":
+        game.start_game()
