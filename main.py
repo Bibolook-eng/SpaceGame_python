@@ -8,14 +8,13 @@
 # Apresenta animações de sprite, inimigos com comportamento dinâmico,
 # sons, um menu funcional e sistema de pontuação/vidas.
 # ---------------------------------------------------------------
-
 import random
 from pgzero.builtins import Actor, keyboard, sounds, Rect
 
 # -------------------- CONFIGURAÇÕES GERAIS --------------------
 TITLE = "INVASORES DO ESPAÇO"
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1024  # Resolução aumentada
+HEIGHT = 768  # Resolução aumentada
 PLAYER_SPEED = 5
 ENEMY_SPEED = 2
 ATTACK_COOLDOWN = 10         # Tempo entre disparos do jogador
@@ -39,14 +38,12 @@ class Player:
             self.actor.x -= self.speed
         if keyboard.right and self.actor.x < WIDTH - 40:
             self.actor.x += self.speed
-
         # Animação da nave (alterna entre dois frames)
         self.animation_timer += 1
         if self.animation_timer >= 10:
             self.animation_timer = 0
             self.animation_frame = 1 - self.animation_frame
             self.actor.image = f"hero_{self.animation_frame + 1}"
-
         # Reduz o cooldown dos tiros
         if self.cooldown > 0:
             self.cooldown -= 1
@@ -97,7 +94,6 @@ class Enemy:
         if self.actor.x > WIDTH - 40 or self.actor.x < 40:
             self.speed *= -1
             self.actor.y += 30
-
         # Alterna entre frame 1 e 2 da imagem do tipo de inimigo
         self.animation_timer += 1
         if self.animation_timer >= 20:
@@ -124,12 +120,11 @@ class Game:
         self.wave = 1
         self.sound_on = True
         self.high_score = 0
-
-        # Botões clicáveis
-        self.start_button = Rect(WIDTH // 2 - 100, 280, 200, 40)
-        self.sound_button = Rect(WIDTH // 2 - 100, 330, 200, 40)
-        self.quit_button = Rect(WIDTH // 2 - 100, 380, 200, 40)
-        self.restart_button = Rect(WIDTH // 2 - 100, 400, 200, 40)
+        # Botões clicáveis ajustados para a nova resolução
+        self.start_button = Rect(WIDTH // 2 - 150, 300, 300, 60)
+        self.sound_button = Rect(WIDTH // 2 - 150, 380, 300, 60)
+        self.quit_button = Rect(WIDTH // 2 - 150, 460, 300, 60)
+        self.restart_button = Rect(WIDTH // 2 - 150, 550, 300, 60)
 
     def start_game(self):
         # Inicia o jogo
@@ -152,30 +147,24 @@ class Game:
     def update(self):
         if self.state != "playing":
             return
-
         self.player.update()
-
         # Atualiza balas do jogador
         for bullet in self.bullets[:]:
             bullet.update()
             if not bullet.active:
                 self.bullets.remove(bullet)
-
         # Atualiza balas dos inimigos
         for bullet in self.enemy_bullets[:]:
             bullet.update()
             if not bullet.active:
                 self.enemy_bullets.remove(bullet)
-
         # Atualiza inimigos e seus tiros
         for enemy in self.enemies[:]:
             enemy.update()
             if new_bullet := enemy.shoot():
                 self.enemy_bullets.append(new_bullet)
-
         # Verifica colisões
         self.check_collisions()
-
         # Próxima onda se todos os inimigos morrerem
         if not self.enemies:
             self.wave += 1
@@ -193,7 +182,6 @@ class Game:
                             sounds.invaderkilled.play()
                         self.enemies.remove(enemy)
                     bullet.active = False
-
         # Colisão entre tiro inimigo e jogador
         for bullet in self.enemy_bullets[:]:
             if abs(bullet.actor.x - self.player.actor.x) < 30 and abs(bullet.actor.y - self.player.actor.y) < 30:
@@ -207,20 +195,19 @@ class Game:
                     self.state = "gameover"
 
     # -------------------- TELAS DO JOGO --------------------
-
     def draw_menu(self):
         screen.clear()
         screen.blit('background', (0, 0))
-        screen.draw.text("INVASORES DO ESPAÇO", center=(WIDTH//2, 150), fontsize=60, color="white")
+        screen.draw.text("INVASORES DO ESPAÇO", center=(WIDTH // 2, 180), fontsize=80, color="white")
         screen.draw.filled_rect(self.start_button, "green")
-        screen.draw.text("INICIAR JOGO", center=(WIDTH//2, 300), fontsize=40, color="white")
+        screen.draw.text("INICIAR JOGO", center=(WIDTH // 2, 320), fontsize=50, color="white")
         sound_color = "green" if self.sound_on else "red"
         screen.draw.filled_rect(self.sound_button, sound_color)
         sound_text = "SOM: LIGADO" if self.sound_on else "SOM: DESLIGADO"
-        screen.draw.text(sound_text, center=(WIDTH//2, 350), fontsize=40, color="white")
+        screen.draw.text(sound_text, center=(WIDTH // 2, 390), fontsize=50, color="white")
         screen.draw.filled_rect(self.quit_button, "red")
-        screen.draw.text("SAIR", center=(WIDTH//2, 400), fontsize=40, color="white")
-        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH//2, 470), fontsize=30, color="yellow")
+        screen.draw.text("SAIR", center=(WIDTH // 2, 460), fontsize=50, color="white")
+        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH // 2, 550), fontsize=40, color="yellow")
 
     def draw_game(self):
         screen.clear()
@@ -230,18 +217,18 @@ class Game:
         for bullet in self.bullets + self.enemy_bullets:
             bullet.draw()
         self.player.draw()
-        screen.draw.text(f"VIDAS: {self.player.lives}", topleft=(20, 20), fontsize=30, color="white")
-        screen.draw.text(f"PONTOS: {self.player.score}", topleft=(20, 50), fontsize=30, color="white")
-        screen.draw.text(f"ONDA: {self.wave}", topleft=(20, 80), fontsize=30, color="white")
+        screen.draw.text(f"VIDAS: {self.player.lives}", topleft=(30, 30), fontsize=40, color="white")
+        screen.draw.text(f"PONTOS: {self.player.score}", topleft=(30, 80), fontsize=40, color="white")
+        screen.draw.text(f"ONDA: {self.wave}", topleft=(30, 130), fontsize=40, color="white")
 
     def draw_game_over(self):
         screen.clear()
         screen.blit('background', (0, 0))
-        screen.draw.text("FIM DE JOGO", center=(WIDTH//2, 200), fontsize=60, color="white")
-        screen.draw.text(f"PONTUAÇÃO: {self.player.score}", center=(WIDTH//2, 300), fontsize=50, color="white")
-        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH//2, 380), fontsize=40, color="yellow")
+        screen.draw.text("FIM DE JOGO", center=(WIDTH // 2, 250), fontsize=100, color="white")
+        screen.draw.text(f"PONTUAÇÃO: {self.player.score}", center=(WIDTH // 2, 380), fontsize=60, color="white")
+        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH // 2, 460), fontsize=50, color="yellow")
         screen.draw.filled_rect(self.restart_button, "blue")
-        screen.draw.text("REINICIAR", center=(WIDTH//2, 450), fontsize=40, color="white")
+        screen.draw.text("REINICIAR", center=(WIDTH // 2, 550), fontsize=50, color="white")
 
     def draw(self):
         if self.state == "menu":
