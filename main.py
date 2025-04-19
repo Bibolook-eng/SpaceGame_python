@@ -18,6 +18,22 @@
 # Email: ruitobiascarvalho@gmail.com
 # ---------------------------------------------------------------
 
+# ---------------------------------------------------------------
+# Nota Educacional:
+# Este projeto foi desenvolvido com fins educacionais, como parte
+# do aprendizado sobre lógica de programação, desenvolvimento de jogos
+# e uso da biblioteca PgZero. O foco principal está em conceitos como:
+# - Animação de sprites em 2D
+# - Gerenciamento de estados do jogo (menu, jogo, game over)
+# - Controle de colisões e inimigos
+# - Interface interativa com menus e pontuação
+# - Estruturação de classes para organização de código
+#
+# Este código serve como base para exploração e aprimoramento futuro
+# por estudantes interessados em programação de jogos com Python.
+# ---------------------------------------------------------------
+
+
 import random
 from pgzero.builtins import Actor, keyboard, sounds, Rect
 
