@@ -207,15 +207,15 @@ class Game:
     def draw_menu(self):
         screen.clear()
         screen.blit('background', (0, 0))
-        screen.draw.text("ROGUE INVADERS", center=(WIDTH//2, 150), fontsize=60, color="white")
+        screen.draw.text("SPACE INVADERS", center=(WIDTH//2, 150), fontsize=60, color="white")
         screen.draw.filled_rect(self.start_button, "green")
-        screen.draw.text("START GAME", center=(WIDTH//2, 300), fontsize=40, color="white")
+        screen.draw.text("INICIAR JOGO", center=(WIDTH//2, 300), fontsize=40, color="white")
         sound_color = "green" if self.sound_on else "red"
         screen.draw.filled_rect(self.sound_button, sound_color)
         sound_text = "SOUND: ON" if self.sound_on else "SOUND: OFF"
         screen.draw.text(sound_text, center=(WIDTH//2, 350), fontsize=40, color="white")
         screen.draw.filled_rect(self.quit_button, "red")
-        screen.draw.text("QUIT", center=(WIDTH//2, 400), fontsize=40, color="white")
+        screen.draw.text("SAIR", center=(WIDTH//2, 400), fontsize=40, color="white")
         
     def draw_game(self):
         screen.clear()
