@@ -13,7 +13,7 @@
 # - Biblioteca PgZero (pgzrun)
 #
 # Contato:
-# GitHub: https://github.com/seu-usuario-aqui
+# GitHub: https://github.com/Bibolook-eng
 # LinkedIn: https://www.linkedin.com/in/ruitobias
 # Email: ruitobiascarvalho@gmail.com
 # ---------------------------------------------------------------
