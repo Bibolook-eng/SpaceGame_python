@@ -1,4 +1,4 @@
-# 🚀 Rogue Invaders
+# 🚀 Space Invaders
 
 Um jogo estilo *arcade shooter* desenvolvido com **Python** e **PgZero**, onde você controla uma nave espacial e enfrenta inimigos em ondas sucessivas. Projetado com sprites animados, som, sistema de pontuação, vidas e um menu funcional com botões interativos.
 
