@@ -144,7 +144,7 @@ class Game:
         # Gera inimigos organizados em 2 linhas de 3
         self.enemies.clear()
         for i in range(2):
-            for j in range(2):
+            for j in range(5):
                 x = 150 + j * 200
                 y = 100 + i * 100
                 self.enemies.append(Enemy(x, y))
