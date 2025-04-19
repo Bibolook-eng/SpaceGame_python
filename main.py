@@ -80,13 +80,23 @@ class Bullet:
 
 # Classe do inimigo
 class Enemy:
-    def __init__(self, x, y):
-        self.actor = Actor('enemy1_1', (x, y))
-        self.actor.scale = 0.8
+    def __init__(self, x, y, enemy_type):
+        self.actor = Actor(self.get_enemy_image(enemy_type), (x, y))
+        self.actor.scale = 0.8  # Ajuste o tamanho do inimigo para ser do mesmo tamanho do jogador
         self.speed = ENEMY_SPEED
         self.health = 100
         self.frame = 0
         self.animation_timer = 0
+        self.enemy_type = enemy_type
+
+    def get_enemy_image(self, enemy_type):
+        """Retorna a imagem do inimigo com base no tipo."""
+        if enemy_type == 1:
+            return random.choice(['enemy1_1', 'enemy1_2'])
+        elif enemy_type == 2:
+            return random.choice(['enemy2_1', 'enemy2_2'])
+        elif enemy_type == 3:
+            return random.choice(['enemy3_1', 'enemy3_2'])
 
     def update(self):
         # Movimento lateral e descida
@@ -100,7 +110,7 @@ class Enemy:
         if self.animation_timer >= 20:
             self.animation_timer = 0
             self.frame = 1 - self.frame
-            self.actor.image = f'enemy1_{self.frame+1}'
+            self.actor.image = self.get_enemy_image(self.enemy_type)
 
     def shoot(self):
         # Tiro aleatório com base em chance
@@ -141,10 +151,11 @@ class Game:
         # Gerar 6 inimigos dispostos em 2 linhas com 3 inimigos em cada
         self.enemies.clear()  # Limpa os inimigos anteriores, se houver
         for i in range(2):  # Duas linhas
-            for j in range(2):  # Três inimigos por linha
+            for j in range(3):  # Três inimigos por linha
                 x = 150 + j * 200  # Espaçamento horizontal
                 y = 100 + i * 100  # Espaçamento vertical
-                self.enemies.append(Enemy(x, y))
+                enemy_type = random.choice([1, 2, 3])  # Escolhe aleatoriamente o tipo do inimigo
+                self.enemies.append(Enemy(x, y, enemy_type))
 
     def update(self):
         if self.state != "playing":
@@ -210,38 +221,36 @@ class Game:
         screen.draw.text("INICIAR JOGO", center=(WIDTH//2, 300), fontsize=40, color="white")
         sound_color = "green" if self.sound_on else "red"
         screen.draw.filled_rect(self.sound_button, sound_color)
-        sound_text = "SOM: LIGADO" if self.sound_on else "SOM: DESLIGADO"
-        screen.draw.text(sound_text, center=(WIDTH//2, 350), fontsize=40, color="white")
+        screen.draw.text("SOM", center=(WIDTH//2, 380), fontsize=40, color="white")
         screen.draw.filled_rect(self.quit_button, "red")
-        screen.draw.text("SAIR", center=(WIDTH//2, 400), fontsize=40, color="white")
-        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH//2, 470), fontsize=30, color="yellow")
+        screen.draw.text("SAIR", center=(WIDTH//2, 460), fontsize=40, color="white")
 
     def draw_game(self):
-        # Tela do jogo em execução
+        # Tela de jogo
         screen.clear()
         screen.blit('background', (0, 0))
+        self.player.draw()
+
+        for bullet in self.bullets:
+            bullet.draw()
         for enemy in self.enemies:
             enemy.draw()
-        for bullet in self.bullets + self.enemy_bullets:
+        for bullet in self.enemy_bullets:
             bullet.draw()
-        self.player.draw()
-        screen.draw.text(f"VIDAS: {self.player.lives}", topleft=(20, 20), fontsize=30, color="white")
-        screen.draw.text(f"PONTOS: {self.player.score}", topleft=(20, 50), fontsize=30, color="white")
-        screen.draw.text(f"ONDA: {self.wave}", topleft=(20, 80), fontsize=30, color="white")
+
+        screen.draw.text(f"PONTUAÇÃO: {self.player.score}", center=(WIDTH//2, 300), fontsize=50, color="white")
+        screen.draw.text(f"VIDAS: {self.player.lives}", center=(WIDTH//2, 360), fontsize=40, color="red")
 
     def draw_game_over(self):
         # Tela de fim de jogo
         screen.clear()
-        screen.blit('background', (0, 0))
-        screen.draw.text("FIM DE JOGO", center=(WIDTH//2, 200), fontsize=60, color="red")
-        screen.draw.text(f"PONTUAÇÃO FINAL: {self.player.score}", center=(WIDTH//2, 280), fontsize=40, color="white")
-        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH//2, 330), fontsize=40, color="yellow")
-        screen.draw.text("PRESSIONE 'S' PARA RECOMEÇAR", center=(WIDTH//2, 380), fontsize=30, color="green")
+        screen.draw.text("GAME OVER", center=(WIDTH//2, 200), fontsize=60, color="white")
+        screen.draw.text(f"PONTUAÇÃO FINAL: {self.player.score}", center=(WIDTH//2, 300), fontsize=50, color="white")
+        screen.draw.text(f"RECORDE: {self.high_score}", center=(WIDTH//2, 380), fontsize=40, color="yellow")
         screen.draw.filled_rect(self.restart_button, "blue")
-        screen.draw.text("REINICIAR", center=(WIDTH//2, 420), fontsize=40, color="white")
+        screen.draw.text("REINICIAR", center=(WIDTH//2, 450), fontsize=40, color="white")
 
     def draw(self):
-        # Desenha a tela correspondente ao estado atual
         if self.state == "menu":
             self.draw_menu()
         elif self.state == "playing":
@@ -250,19 +259,17 @@ class Game:
             self.draw_game_over()
 
     def on_mouse_down(self, pos):
-        # Clique em botões do menu
         if self.state == "menu":
             if self.start_button.collidepoint(pos):
                 self.start_game()
             elif self.sound_button.collidepoint(pos):
                 self.sound_on = not self.sound_on
-                sounds._muted = not self.sound_on
             elif self.quit_button.collidepoint(pos):
-                exit()
-        elif self.state == "gameover":
-            if self.restart_button.collidepoint(pos):
-                self.start_game()
+                quit()
+        elif self.state == "gameover" and self.restart_button.collidepoint(pos):
+            self.start_game()
 
+# Instancia o jogo
 game = Game()
 
 def update():
