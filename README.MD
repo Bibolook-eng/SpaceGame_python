@@ -4,6 +4,7 @@ Um jogo estilo *arcade shooter* desenvolvido com **Python** e **PgZero**, onde v
 
 ![screenshot](/images/tela01.png) <!-- Substitua pelo nome correto do arquivo de imagem, se houver -->
 ![screenshot](/images/tela02.png) <!-- Substitua pelo nome correto do arquivo de imagem, se houver -->
+![screenshot](/images/tela03.png) <!-- Substitua pelo nome correto do arquivo de imagem, se houver -->
 
 
 ## 🎮 Como Jogar
