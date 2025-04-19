@@ -32,6 +32,4 @@ Um jogo estilo *arcade shooter* desenvolvido com **Python** e **PgZero**, onde v
 
 ## ▶️ Executando o jogo
 
-1. Instale o PgZero (caso ainda não tenha):
-   ```bash
-   pip install pgzero
+1. "/dist/main.exe"
